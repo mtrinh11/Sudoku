@@ -1,6 +1,7 @@
 # algorithmic sudouku generator help from https://dlbeer.co.nz/articles/sudoku.html
 # rows and columns indexed 0-8
 import random
+import copy
 emptygrid = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -25,19 +26,22 @@ def sudokuBoard():
 #invalid Sudokus will contain 0s
 def checkifSudokuisvalid(grid):
     for row in grid:
-        for column in grid:
+        for column in row:
             if column == 0:
                 return False
     return True
 
-#makes a Sudoku board, but may contain 0s if creation algorithm messes up
+#makes a Sudoku board, but may contain 0s 
 def generatePossibleSudoku():
-    playgrid = emptygrid
-    while True:
+    playgrid = copy.deepcopy(emptygrid)
+    while not checkifSudokuisvalid(playgrid):
         curr_cell = fewest_candidates(playgrid)
-        if isCellempty(playgrid, curr_cell[0], curr_cell[1]) == False:
-            break
-        playgrid[curr_cell[0]][curr_cell[1]] = random.choice(possibleCandidates(playgrid,curr_cell[0], curr_cell[1]))
+        curr_posscand = possibleCandidates(playgrid,curr_cell[0], curr_cell[1])
+        #reaches this condition if it creates a sudoku has cells that cannot be filled
+        if len(curr_posscand) == 0:
+            playgrid = copy.deepcopy(emptygrid)
+        else: 
+            playgrid[curr_cell[0]][curr_cell[1]] = random.choice(curr_posscand)
     return playgrid
 
 # returns list of possible candidates for the cell after looking at the column
@@ -77,12 +81,14 @@ def boxCheck(board, row, column):
         search_row += 1
         counter -= 1
 
-
     return list(set(completed) - set(curr_box))
 
 # returns list of possible candidates after looking at row, column, and box
 def possibleCandidates(board, row, column):
-    return list(set(list(set(rowCheck(board, row)) & set(columnCheck(board, column)))) & set(boxCheck(board, row, column)))
+    columncand = columnCheck(board, column)
+    rowcand = rowCheck(board, row)
+    boxcand = boxCheck(board, row, column)
+    return list(set(boxcand) & set(list(set(columncand) & set(rowcand))) )
 
 # returns the open cell [row, column] with the fewest candidates greater than 0
 # if multiple cells have the same number of candidates it returns the left-most and top-most cell
@@ -98,12 +104,11 @@ def fewest_candidates(board):
                 curr_col +=1 
                 continue
             curr_cands = len(possibleCandidates(board, curr_row, curr_col)) 
-            if 0 < curr_cands < least_candidates:
+            if 0 <= curr_cands < least_candidates:
                 ans_row = curr_row
                 ans_col = curr_col
                 least_candidates = curr_cands
             curr_col += 1
-            
         curr_row += 1
     return [ans_row, ans_col]
 
