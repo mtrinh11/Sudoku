@@ -16,12 +16,41 @@ emptygrid = [
 completed = [1,2,3,4,5,6,7,8,9]
 
 #returns fully valid board to play
-def sudokuBoard():
+def completedSudokuBoard():
     while True:
         board = generatePossibleSudoku()
         if checkifSudokuisvalid(board):
             break
     return board
+
+def puzzleSudokuBoard(grid, difficulty):
+    # if difficulty == "easy":
+
+        
+    # elif difficult == "medium":
+
+    # elif difficult == "hard": 
+    print (diffultyscore(grid))
+    return emptygrid
+
+def diffultyscore(grid):
+    emptycells = 0
+    for row in grid:
+        for column in row:
+            if column == 0:
+                emptycells += 1
+    branchdifficulty = 0
+    row = 0
+    while row <= 8:
+        col = 0
+        while col <= 8:
+            if isCellempty(grid, row, col):
+                branchdifficulty = branchdifficulty + (len(possibleCandidates(grid, row, col)) - 1) ** 2
+            col += 1
+        row += 1
+    score = branchdifficulty * 100 + emptycells
+    print(score)
+    return score
 
 #invalid Sudokus will contain 0s
 def checkifSudokuisvalid(grid):

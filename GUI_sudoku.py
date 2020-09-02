@@ -6,7 +6,8 @@ from tkinter import Tk, Canvas, Frame, Button, BOTH, TOP, BOTTOM
 
 margin = 20
 side = 50
-width = height = margin * 2 + side * 9
+width = margin * 2 + side * 9
+height = margin * 2 + side * 9
 
 #draws the board is the user interface for the game
 class sudokuGUI(Frame):
@@ -19,15 +20,22 @@ class sudokuGUI(Frame):
         self.row = 0
         self.col = 0
         self.__initUI()
+        self.difficult = "easy"
 
     def __initUI(self):
         self.parent.title("Sudoku")
         self.pack(fill = BOTH, expand = 1)
         self.canvas = Canvas(self, width = width, height = height)
-        self.canvas.pack(fill=BOTH, side=TOP)
+        self.canvas.pack(fill = BOTH, side = TOP)
 
-        clear_button = Button(self, text = "New Game", command = self.new_game)
-        clear_button.pack(side=BOTTOM)
+        newGameButton = Button(self, text = "New Game", width = 10, height = 1, command = self.new_game)
+        newGameButton.place (x = 20, y = 490 )
+        easyButton = Button(self, text = "Easy", width = 10, height = 1, command = self.easy_game)
+        easyButton.place (x = 120, y = 490 )
+        mediumButton = Button(self, text = "Medium", width = 10, height = 1, command = self.medium_game)
+        mediumButton.place (x = 220, y = 490 )
+        hardButton = Button(self, text = "Hard", width = 10, height = 1, command = self.hard_game)
+        hardButton.place (x = 320, y = 490 )
 
         self.draw_grid()
         self.draw_numbers()
@@ -64,8 +72,29 @@ class sudokuGUI(Frame):
                     self.canvas.create_text( x, y, text = numberentered, tags = "numbers", fill = color )
 
     def new_game(self):
-        self.endboard = generate_sudoku_board.sudokuBoard()
-        # self.board =
+        self.endboard = generate_sudoku_board.completedSudokuBoard()
+        self.board = generate_sudoku_board.puzzleSudokuBoard(self.endboard, self.difficulty)
+        self.canvas.delete("victory")
+        self.draw_numbers()
+
+    def easy_game(self):
+        self.endboard = generate_sudoku_board.completedSudokuBoard()
+        self.difficulty = "easy"
+        self.board = generate_sudoku_board.puzzleSudokuBoard(self.endboard, self.difficulty)
+        self.canvas.delete("victory")
+        self.draw_numbers()
+    
+    def medium_game(self):
+        self.endboard = generate_sudoku_board.completedSudokuBoard()
+        self.difficulty = "medium"
+        self.board = generate_sudoku_board.puzzleSudokuBoard(self.endboard, self.difficulty)
+        self.canvas.delete("victory")
+        self.draw_numbers()
+
+    def hard_game(self):
+        self.endboard = generate_sudoku_board.completedSudokuBoard()
+        self.difficulty = "hard"
+        self.board = generate_sudoku_board.puzzleSudokuBoard(self.endboard, self.difficulty)
         self.canvas.delete("victory")
         self.draw_numbers()
 
@@ -143,12 +172,13 @@ class sudokuGUI(Frame):
         )
 
 
-done = generate_sudoku_board.sudokuBoard()
+done = generate_sudoku_board.completedSudokuBoard()
 
 done1 =  copy.deepcopy(done)
 done1[0][0] = 0
 
 root = Tk()
+root.geometry("%dx%d" % (width, height + 40))
 
-sudokuGUI(root, done, done1)
+sudokuGUI(root, done, generate_sudoku_board.generate_sudoku_board.puzzleSudokuBoard(done1, "easy"))
 root.mainloop()
