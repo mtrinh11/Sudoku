@@ -20,22 +20,22 @@ class sudokuGUI(Frame):
         self.row = 0
         self.col = 0
         self.__initUI()
-        self.difficult = "easy"
 
     def __initUI(self):
         self.parent.title("Sudoku")
+        self.difficulty = "easy"
         self.pack(fill = BOTH, expand = 1)
         self.canvas = Canvas(self, width = width, height = height)
         self.canvas.pack(fill = BOTH, side = TOP)
 
         newGameButton = Button(self, text = "New Game", width = 10, height = 1, command = self.new_game)
-        newGameButton.place (x = 20, y = 490 )
+        newGameButton.place (x = 20, y = 500 )
         easyButton = Button(self, text = "Easy", width = 10, height = 1, command = self.easy_game)
-        easyButton.place (x = 120, y = 490 )
+        easyButton.place (x = 120, y = 500 )
         mediumButton = Button(self, text = "Medium", width = 10, height = 1, command = self.medium_game)
-        mediumButton.place (x = 220, y = 490 )
+        mediumButton.place (x = 220, y = 500 )
         hardButton = Button(self, text = "Hard", width = 10, height = 1, command = self.hard_game)
-        hardButton.place (x = 320, y = 490 )
+        hardButton.place (x = 320, y = 500 )
 
         self.draw_grid()
         self.draw_numbers()
@@ -134,7 +134,6 @@ class sudokuGUI(Frame):
             )
 
     def key_pressed(self, event):
-        print(event)
         if event.keysym == "Left":
             self.col -= 1
             self.draw_numbers()
@@ -172,13 +171,11 @@ class sudokuGUI(Frame):
         )
 
 
-done = generate_sudoku_board.completedSudokuBoard()
-
-done1 =  copy.deepcopy(done)
-done1[0][0] = 0
+answerboard = generate_sudoku_board.completedSudokuBoard()
+puzzleboard = generate_sudoku_board.puzzleSudokuBoard(answerboard, "easy")
 
 root = Tk()
 root.geometry("%dx%d" % (width, height + 40))
 
-sudokuGUI(root, done, generate_sudoku_board.generate_sudoku_board.puzzleSudokuBoard(done1, "easy"))
+sudokuGUI(root, answerboard, puzzleboard)
 root.mainloop()

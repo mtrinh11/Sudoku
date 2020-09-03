@@ -23,15 +23,42 @@ def completedSudokuBoard():
             break
     return board
 
+#forms the puzzle board from the completed board according to wanted difficulty
 def puzzleSudokuBoard(grid, difficulty):
-    # if difficulty == "easy":
+    #avg of 30 empty spaces
+    if difficulty == "easy":
+        lbound = 2000
+    #avg of 40 empty spaces
+    elif difficulty == "medium":
+        lbound = 15000
+    #avg of 50 empty spaces
+    elif difficulty == "hard": 
+        lbound = 50000
+    puzzlegrid = copy.deepcopy(grid)
+    puzzlescore = diffultyscore(puzzlegrid)
+    tempgrid = copy.deepcopy(grid)
 
+    while not (lbound <= puzzlescore):
+        #remove random cell
+        row = random.choice(range(9))
+        col = random.choice(range(9))
+        valueremoved = copy.deepcopy(tempgrid[row][col])
+        tempgrid[row][col] = 0
+        tempscore = diffultyscore(tempgrid)
         
-    # elif difficult == "medium":
+        #checks if puzzle can be uniquely solved, if not put value back
+        few_cell = fewest_candidates(tempgrid)
+        if len(possibleCandidates(grid, few_cell[0], few_cell[1])) > 1:
+            tempgrid[row][col] = valueremoved
+        
+        #if difficulty score is higher and puzzle is unique, save new puzzle and score
+        if tempscore > puzzlescore:
+            puzzlegrid = copy.deepcopy(tempgrid)
+            puzzlescore = tempscore
+    
+    print (diffultyscore(puzzlegrid))   
 
-    # elif difficult == "hard": 
-    print (diffultyscore(grid))
-    return emptygrid
+    return puzzlegrid
 
 def diffultyscore(grid):
     emptycells = 0
@@ -49,7 +76,7 @@ def diffultyscore(grid):
             col += 1
         row += 1
     score = branchdifficulty * 100 + emptycells
-    print(score)
+    print(emptycells)
     return score
 
 #invalid Sudokus will contain 0s
@@ -66,7 +93,7 @@ def generatePossibleSudoku():
     while not checkifSudokuisvalid(playgrid):
         curr_cell = fewest_candidates(playgrid)
         curr_posscand = possibleCandidates(playgrid,curr_cell[0], curr_cell[1])
-        #reaches this condition if it creates a sudoku has cells that cannot be filled
+        #reaches this condition if it creates a sudoku that has cells that cannot be filled
         if len(curr_posscand) == 0:
             playgrid = copy.deepcopy(emptygrid)
         else: 
