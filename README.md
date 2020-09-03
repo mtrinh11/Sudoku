@@ -7,5 +7,3 @@ You move around the board by clicking or using your arrow keys. The active cell 
 Clicking new game resets the board with the previous difficulty set. The default difficult is: easy.
 
 Created for fun and to get reaquainted with coding in Python. 
-
-To run in your terminal: python GUI_sudoku.py
