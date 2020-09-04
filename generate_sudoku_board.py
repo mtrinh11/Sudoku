@@ -33,7 +33,7 @@ def puzzleSudokuBoard(grid, difficulty):
         lbound = 15000
     #avg of 50 empty spaces
     elif difficulty == "hard": 
-        lbound = 50000
+        lbound = 45000
     puzzlegrid = copy.deepcopy(grid)
     puzzlescore = diffultyscore(puzzlegrid)
     tempgrid = copy.deepcopy(grid)
@@ -47,8 +47,7 @@ def puzzleSudokuBoard(grid, difficulty):
         tempscore = diffultyscore(tempgrid)
         
         #checks if puzzle can be uniquely solved, if not put value back
-        few_cell = fewest_candidates(tempgrid)
-        if len(possibleCandidates(grid, few_cell[0], few_cell[1])) > 1:
+        if backtrackingSolve(tempgrid) != 1:
             tempgrid[row][col] = valueremoved
         
         #if difficulty score is higher and puzzle is unique, save new puzzle and score
@@ -173,3 +172,60 @@ def isCellempty(board, row, column):
     if board[row][column] == 0:
         return True
     return False
+
+#returns the number of solutions there are to the board using backtracking algo
+def backtrackingSolve(board):
+    numsols = 0
+    empty = findEmptyCell(board)
+    if empty == []:
+        return 1
+    row = empty[0]
+    col = empty[1]
+    for plug in range (1,10):
+        if acceptableAnswer(board, plug, row, col):
+            board[row][col] = plug
+            numsols += backtrackingSolve(board)
+            board[row][col] = 0
+    return numsols
+
+def findEmptyCell(board):
+    row_count = 0
+    for row in board:
+        col_count = 0
+        for col in row:
+            if col == 0:
+             return [row_count,col_count]
+            col_count += 1
+        row_count += 1
+    return []
+
+def acceptableAnswer(board, answer, row, column):
+    poss = possibleCandidates(board, row, column)
+    if answer in poss:
+        return True
+    return False
+
+
+testgrid1 = [
+    [0,8,0,0,0,9,7,4,3],
+    [0,5,0,0,0,8,0,1,0],
+    [0,1,0,0,0,0,0,0,0],
+    [8,0,0,0,0,5,0,0,0],
+    [0,0,0,8,0,4,0,0,0],
+    [0,0,0,3,0,0,0,0,6],
+    [0,0,0,0,0,0,0,7,0],
+    [0,3,0,5,0,0,0,8,0],
+    [9,7,2,4,0,0,0,5,0]
+]
+
+testgrid2 = [
+    [2,8,6,1,5,9,7,4,3],
+    [3,5,7,6,4,8,2,1,9],
+    [4,1,9,7,0,0,5,6,8],
+    [8,2,1,9,6,5,4,3,7],
+    [6,9,3,8,7,4,1,2,5],
+    [7,4,5,3,0,0,8,9,6],
+    [5,6,8,2,0,0,9,7,4],
+    [1,3,4,5,9,7,6,8,2],
+    [9,7,2,4,8,6,3,5,1]
+]
